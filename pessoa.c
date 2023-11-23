@@ -102,11 +102,14 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     // Faz a interseção dos conjuntos pretendente e candidata
     struct conjunto *conjIntersecao = intersecao(pretendente, candidata);
 
+    // Variável quantidade recebe o tamanho do conjunto interseção
     int quantidade = conjIntersecao->tam;
+    // Liberando memória dos conjuntos criados
     destroiConj(conjIntersecao);
     destroiConj(pretendente);
     destroiConj(candidata);
 
+    // Condição se a quantidade de atributos igual a 2 devolve o id da pessoa
     if (quantidade == 2)
         return p1->id;
     return 0;
