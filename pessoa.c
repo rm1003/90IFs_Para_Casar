@@ -112,7 +112,7 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     // Condição se a quantidade de atributos igual a 2 devolve o id da pessoa
     if (quantidade == 2)
         return p1->id;
-    return 0;
+    return -1;
 }
 
 // Função para liberar memória alocada
