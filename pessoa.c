@@ -5,20 +5,19 @@
 #include "conjunto.h"
 
 // Função para gerar os atributos
-void geraAtributos(struct pessoa *p, int tam) {
-
-    int indice = 0; // indice da posição do atributo
+void geraAtributos(struct pessoa *p) {
+    int indice; // indice da posição do atributo
     int maxAtributos = 0; // controlador da quatidade de atributos
 
     // Laço para zerar todas posições do vetor
-    for (int i = 0; i < tam; i++) {
+    for (int i = 0; i < TAM; i++) {
         p->atributos[i] = 0;
     }
     
     // Laço para colocar a quantidade necessário de atributos
-    while (maxAtributos < p->qtdAtributos) {
+    while (maxAtributos < (p->qtdAtributos)) {
         // Gerando indice "aleatoriamente"
-        indice = rand() % 8;
+        indice = (rand() % 8);
         // Condição para verificar se no indice já possui ou não o atributo
         if (p->atributos[indice] == 0) {
             p->atributos[indice] = 1;
@@ -29,26 +28,25 @@ void geraAtributos(struct pessoa *p, int tam) {
 }
 
 // Função para criar pessoa pretendente e devolve o pretendente
-struct pessoa *criaPretendentes(int id) {
+struct pessoa *criaPretendentes(int identificador) {
     // Aloca memória para nova pretendente
     struct pessoa *novaPretendente = malloc(sizeof(struct pessoa));
-
     // Testa se a memória foi alocada corretamente
     if (novaPretendente == NULL)
         return NULL;
 
     // Pretendente recebe o seu identificador
-    novaPretendente->id = id;
+    novaPretendente->id = identificador;
+
     // Aloca memória para os atributos
     novaPretendente->atributos = malloc(TAM * sizeof(int));
-
     // Testa se a memória foi alocada corretamente
     if (novaPretendente->atributos == NULL)
         return NULL;
-    
+
     // Quantidade de atributos = 3
     novaPretendente->qtdAtributos = ATRIBUTOSP;
-    geraAtributos(novaPretendente, ATRIBUTOSP);
+    geraAtributos(novaPretendente);
     return novaPretendente;
 }
 
@@ -72,7 +70,7 @@ struct pessoa *criaCandidatas(int id) {
 
     // Quantidade de atributos = 2
     novaCandidata->qtdAtributos = ATRIBUTOSC;
-    geraAtributos(novaCandidata, ATRIBUTOSC);
+    geraAtributos(novaCandidata);
     return novaCandidata;
 }
 
@@ -94,7 +92,7 @@ struct conjunto *decodificaAtributos(struct pessoa *p) {
 }
 
 // Função que devolve o pretendente com os atributos desejadas
-struct pessoa *intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
+int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     // Armazenando os atributos no conjunto pretendentes
     struct conjunto *pretendente = decodificaAtributos(p1);
 
@@ -104,10 +102,14 @@ struct pessoa *intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     // Faz a interseção dos conjuntos pretendente e candidata
     struct conjunto *conjIntersecao = intersecao(pretendente, candidata);
 
-    // Condição para devolver pretendente se a interseção deu 2 atributos
-    if (conjIntersecao->tam == 2)
-        return p1;
-    return NULL;
+    int quantidade = conjIntersecao->tam;
+    destroiConj(conjIntersecao);
+    destroiConj(pretendente);
+    destroiConj(candidata);
+
+    if (quantidade == 2)
+        return p1->id;
+    return 0;
 }
 
 // Função para liberar memória alocada

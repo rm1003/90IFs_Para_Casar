@@ -10,7 +10,7 @@ struct pessoa {
 
 
 // Gera os atributos
-void geraAtributos(struct pessoa *p, int tam);
+void geraAtributos(struct pessoa *p);
 
 // Cria uma pessoa pretendente
 struct pessoa *criaPretendentes(int id);
@@ -22,7 +22,7 @@ struct pessoa *criaCandidatas(int id);
 struct conjunto *decodificaAtributos(struct pessoa *p);
 
 // Faz a intersecao entre as pessoas
-struct pessoa *intersecaoPessoa(struct pessoa *p1, struct pessoa *p2);
+int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2);
 
 // Destroi struct pessoa
 void destroiPessoa(struct pessoa *p);

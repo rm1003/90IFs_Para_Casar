@@ -23,8 +23,7 @@ int main (){
     c2 = decodificaAtributos(p2);
     imprimeConj(c2);
     printf("\n");
-    imprimeAtributos(intersecaoPessoa(p1,p2));
-    printf("\n");
+    printf("%d \n", intersecaoPessoa(p1,p2));
 
     destroiPessoa(p1);
     destroiPessoa(p2);
