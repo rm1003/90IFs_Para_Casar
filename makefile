@@ -2,7 +2,7 @@ CFLAGS = -g -Wall -Wextra
 CC = gcc
 
 # ARQUIVOS e OBJETOS sao variaveis
-ARQUIVOS = conjunto.c pessoa.c main.c
+ARQUIVOS = pilha.c listaCircular.c conjunto.c pessoa.c main.c
 # $(ARQUIVOS:.c=.o) todo arquivo .c vira .o e é guardado no OBJETOS
 OBJETOS = $(ARQUIVOS:.c=.o)
 
