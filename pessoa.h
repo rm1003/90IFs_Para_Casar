@@ -8,6 +8,8 @@ struct pessoa {
     int *atributos;
 };
 
+// Função para zerar os elementos do vetor
+void zeraVetor (int *vetor);
 
 // Gera os atributos
 void geraAtributos(struct pessoa *p);

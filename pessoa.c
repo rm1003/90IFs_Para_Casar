@@ -4,16 +4,20 @@
 #include "pessoa.h"
 #include "conjunto.h"
 
+// Função para zerar os elementos do vetor
+void zeraVetor (int *vetor) {
+    for (int i = 0; i < TAM; i++) {
+        vetor[i] = 0;
+    }
+    return;
+}
+
 // Função para gerar os atributos
 void geraAtributos(struct pessoa *p) {
     int indice; // indice da posição do atributo
     int maxAtributos = 0; // controlador da quatidade de atributos
 
-    // Laço para zerar todas posições do vetor
-    for (int i = 0; i < TAM; i++) {
-        p->atributos[i] = 0;
-    }
-    
+    zeraVetor(p->atributos);
     // Laço para colocar a quantidade necessário de atributos
     while (maxAtributos < (p->qtdAtributos)) {
         // Gerando indice "aleatoriamente"
@@ -51,7 +55,7 @@ struct pessoa *criaPretendentes(int identificador) {
 }
 
 // Função para criar pessoa candidata e devolve a candidata
-struct pessoa *criaCandidatas(int id) {
+struct pessoa *criaCandidatas(int identificador) {
     // Aloca memória para nova candidata
     struct pessoa *novaCandidata = malloc(sizeof(struct pessoa));
 
@@ -60,7 +64,7 @@ struct pessoa *criaCandidatas(int id) {
         return NULL;
     
     // Candidata recebe o seu identificador
-    novaCandidata->id = id;
+    novaCandidata->id = identificador;
     // Aloca memória para os atributos
     novaCandidata->atributos = malloc(TAM * sizeof(int));
 
@@ -127,10 +131,42 @@ void imprimeAtributos(struct pessoa *p) {
     if (p == NULL) {
         return;
     }
+
+    // aux = auxiliar para armazenar os atributos
+    struct conjunto *aux = decodificaAtributos(p);
+
+    // Imprime o id da pessoa
+    printf("%d \n", p->id);
+
     // Laço para imprimir os atributos
-    for (int i = 0; i < TAM; i++) {
-        printf("%d ", p->atributos[i]);
+    for (int i = 0; i < aux->tam; i++) {
+        switch (aux->elementos[i]) {
+            case 0:
+                printf("Usa Linux.\n");
+                break;
+            case 1:
+                printf("Computeiro.\n");
+                break;
+            case 2:
+                printf("Shape.\n");
+                break;
+            case 3:
+                printf("Rico.\n");
+                break;
+            case 4:
+                printf("Alto.\n");
+                break;
+            case 5:
+                printf("Não Calvo.\n");
+                break;
+            case 6:
+                printf("Usa o bogosort para ordenar.\n");
+                break;
+            case 7:
+                printf("Gosta de Anime.\n");
+                break;
+        }
     }
-    printf("\n");
+    destroiConj(aux);
     return;
 }
