@@ -1,23 +1,20 @@
 #include <stdbool.h>
 
-#ifndef ITEM
-#define ITEM
-struct item {
+
+struct itemP {
 	int valor;
-	struct item *proximo;
+	struct itemP *proximo;
 };
-#endif
+
 
 struct pilha {
-	struct item *topo;
+	struct itemP *topo;
 	int tamanho;
 };
 
 // Recebe inteiro, aloca memoria para um item, atribui o valor e retorna o item
-#ifndef CRIA_ITEM
-#define CRIA_ITEM
-struct item *criaItem(int valor);
-#endif
+
+struct itemP *criaItemP(int valor);
 
 // Aloca memoria para uma pilha, zera o tamanho e atribui o ponteiros topo para NULO
 struct pilha *inicializaPilha();

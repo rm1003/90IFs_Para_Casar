@@ -23,7 +23,6 @@ struct listaC* inicializaListaC(){
     if (l != NULL){
         l->cabeca = NULL;
         l->tamanho = 0;
-        printf("%d\n",l->tamanho);
     }
     return l;
 }
@@ -48,7 +47,7 @@ void insere(struct listaC* l, int id){
 
 }
 
-struct item* extrairItem(struct listaC* l, int id,int *erro){
+struct item* extrairItem(struct listaC* l, int id, int *erro){
     struct item* aux = l->cabeca;
     int cont = 0;
     
@@ -85,10 +84,11 @@ struct item* extrairItem(struct listaC* l, int id,int *erro){
 }
 
 void transfereItem(struct listaC* l1, struct listaC* l2, int id){
-    int* erro = 0;
-    struct item* aux = extrairItem(l1,id,erro);
-    if (!(*erro))
+    int erro = 0;
+    struct item* aux = extrairItem(l1, id, &erro);
+    if (!(erro))
         insere(l2,id);
+
     return;
 }
 
@@ -115,7 +115,6 @@ void removeCabeca(struct listaC* l){
 void imprimelistaC(struct listaC* l){
     struct item* aux = l->cabeca;
 
-    printf("%d\n",l->tamanho);
     for (int i = 0; i < l->tamanho; i++){
         printf("%d ",aux->id);
         aux = aux->proximo;
@@ -126,7 +125,6 @@ void imprimelistaC(struct listaC* l){
 
 void destroiListaC(struct listaC* l){
     while(!listaVazia(l)){
-        printf("olha aqui%d\n\n\n\n",l->tamanho);
         removeCabeca(l);
     }
     free(l);

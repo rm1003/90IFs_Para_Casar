@@ -1,3 +1,4 @@
+
 struct item {
 	int id;
 	struct item *anterior;
@@ -29,6 +30,8 @@ struct item* extrairItem(struct listaC* l, int id,int *erro);
 void transfereItem(struct listaC* l1,struct listaC* l2, int id);
 
 void removeCabeca(struct listaC* l);
+
+void imprimelistaC(struct listaC *l);
 
 // libera toda memoria alocada na lista;
 void destroiListaC(struct listaC *l);

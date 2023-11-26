@@ -8,8 +8,8 @@ bool pilhaVazia(struct pilha* p){
     return 0;
 }
 
-struct item* criarItem(int valor){
-    struct item* i = malloc(sizeof(struct item));
+struct itemP* criarItemP(int valor){
+    struct itemP* i = malloc(sizeof(struct itemP));
     if (i == NULL)
         return NULL;
     i->valor = valor;
@@ -27,7 +27,7 @@ struct pilha* inicializaPilha(){
 }
 
 int push(struct pilha* p,int a){
-    struct item* novo = criarItem(a);
+    struct itemP* novo = criarItemP(a);
     
     if (novo == NULL)
         return 0;
@@ -45,7 +45,7 @@ int pop(struct pilha* p,int *dado){
     if (pilhaVazia(p))
         return 0;
     
-    struct item* aux = p->topo;
+    struct itemP* aux = p->topo;
     
     if (dado != NULL)
         *dado = p->topo->valor; 

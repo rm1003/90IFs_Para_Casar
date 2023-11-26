@@ -5,8 +5,8 @@
 #include "conjunto.h"
 
 // Função para zerar os elementos do vetor
-void zeraVetor (int *vetor) {
-    for (int i = 0; i < TAM; i++) {
+void zeraVetor (int *vetor, int tam) {
+    for (int i = 0; i < tam; i++) {
         vetor[i] = 0;
     }
     return;
@@ -17,7 +17,7 @@ void geraAtributos(struct pessoa *p) {
     int indice; // indice da posição do atributo
     int maxAtributos = 0; // controlador da quatidade de atributos
 
-    zeraVetor(p->atributos);
+    zeraVetor(p->atributos, TAM);
     // Laço para colocar a quantidade necessário de atributos
     while (maxAtributos < (p->qtdAtributos)) {
         // Gerando indice "aleatoriamente"
@@ -114,7 +114,7 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     destroiConj(candidata);
 
     // Condição se a quantidade de atributos igual a 2 devolve o id da pessoa
-    if (quantidade == 2)
+    if (quantidade >= 2)
         return p1->id;
     return -1;
 }
