@@ -1,3 +1,4 @@
+// Arquivo conjunto.h
 #include <stdbool.h>
 
 struct conjunto {

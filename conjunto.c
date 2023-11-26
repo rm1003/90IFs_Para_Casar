@@ -212,6 +212,7 @@ void imprimeConj(struct conjunto *c) {
         for (i = 0; i < c->tam; i++ ) {
             printf("%d ", c->elementos[i]);
         }
+        printf("\n");
     }
     return;
 }

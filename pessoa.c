@@ -1,6 +1,6 @@
+// Arquivo pessoa.c
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "pessoa.h"
 #include "conjunto.h"
 
@@ -21,7 +21,7 @@ void geraAtributos(struct pessoa *p) {
     // Laço para colocar a quantidade necessário de atributos
     while (maxAtributos < (p->qtdAtributos)) {
         // Gerando indice "aleatoriamente"
-        indice = (rand() % 8);
+        indice = rand() % TAM;
         // Condição para verificar se no indice já possui ou não o atributo
         if (p->atributos[indice] == 0) {
             p->atributos[indice] = 1;
@@ -103,8 +103,16 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
     // Armazenando os atributos no conjunto candidata
     struct conjunto *candidata = decodificaAtributos(p2);
 
+    // Verificando se ambos são nulos ou não
+    if (pretendente == NULL || candidata == NULL)
+        return -1;
+
     // Faz a interseção dos conjuntos pretendente e candidata
     struct conjunto *conjIntersecao = intersecao(pretendente, candidata);
+
+    // Verifica se a interseção é válida
+    if (conjIntersecao == NULL)
+        return -1;
 
     // Variável quantidade recebe o tamanho do conjunto interseção
     int quantidade = conjIntersecao->tam;
@@ -123,14 +131,15 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
 void destroiPessoa(struct pessoa *p) {
     free(p->atributos);
     free(p);
+    p = NULL;
+    return;
 }
 
 // Função para imprimir os atributos da pessoa
 void imprimeAtributos(struct pessoa *p) {
     // Testa se a p é nulo
-    if (p == NULL) {
+    if (p == NULL)
         return;
-    }
 
     // aux = auxiliar para armazenar os atributos
     struct conjunto *aux = decodificaAtributos(p);

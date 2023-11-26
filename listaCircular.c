@@ -21,7 +21,7 @@ struct listaC* inicializaListaC(){
 
     // caso ponteiro valido, inicializa ele
     if (l != NULL){
-        l->cabeca = NULL;
+        l->cabeca = NULL;   
         l->tamanho = 0;
     }
     return l;
@@ -36,7 +36,7 @@ void insere(struct listaC* l, int id){
     struct item* novo = criaItem(id);
     
     if(!listaVazia(l)){
-        novo->proximo = l->cabeca ;
+        novo->proximo = l->cabeca;
         novo->anterior = l->cabeca->anterior;
         l->cabeca->anterior->proximo = novo;
         l->cabeca->anterior = novo;
@@ -44,7 +44,7 @@ void insere(struct listaC* l, int id){
 
     l->tamanho++;
     l->cabeca = novo;
-
+    return;
 }
 
 struct item* extrairItem(struct listaC* l, int id, int *erro){
@@ -58,7 +58,7 @@ struct item* extrairItem(struct listaC* l, int id, int *erro){
     }
 
     // não existe elemento com esse id 
-    if (cont >= l->tamanho){
+    if (cont >= l->tamanho) {
         *erro = 1;
         return NULL;
     }
@@ -83,21 +83,21 @@ struct item* extrairItem(struct listaC* l, int id, int *erro){
     return aux;
 }
 
-void transfereItem(struct listaC* l1, struct listaC* l2, int id){
-    int erro = 0;
-    struct item* aux = extrairItem(l1, id, &erro);
-    if (!(erro))
-        insere(l2,id);
-
-    return;
-}
-
-
 void destroiItem(struct item* dItem){
 
     free(dItem);
     dItem = NULL;
     
+    return;
+}
+
+void transfereItem(struct listaC* l1, struct listaC* l2, int id){
+    int erro = 0;
+    struct item* aux = extrairItem(l1, id, &erro);
+    if (aux != NULL && !(erro)) {
+        insere(l2,id);
+        destroiItem(aux);
+    }
     return;
 }
 

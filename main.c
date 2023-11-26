@@ -1,3 +1,4 @@
+// Arquivo main.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -7,47 +8,53 @@
 #include "conjunto.h"
 
 
-#define QTD_CANDIDATAS 10
-#define QTD_PRETENDENTES 10
+#define QTD_CANDIDATAS 100
+#define QTD_PRETENDENTES 100
 
 
 int batalha (struct pessoa *p1, struct pessoa *p2) {
-	int i, j, pontoP1, pontoP2;
+	int i, j, pontoP1, pontoP2, tamIntersecao;
 	int *vetorP1, *vetorP2;
+
 	// 3 conjuntos, atributos da pessoa 1 e 2, e interseção dos atributos
 	struct conjunto *atributoP1, *atributoP2, *intAtri;
+
 	// Recebendo a posição dos atributos
 	atributoP1 = decodificaAtributos(p1);
 	atributoP2 = decodificaAtributos(p2);
 	intAtri = intersecao(atributoP1, atributoP2);
+	tamIntersecao = intAtri->tam;
 
 	// Alocando memória para vetor do índice dos atributos
-	vetorP1 = malloc(intAtri->tam * sizeof(int));
-	vetorP2 = malloc(intAtri->tam * sizeof(int));
+	vetorP1 = malloc(tamIntersecao * sizeof(int));
+	vetorP2 = malloc(tamIntersecao * sizeof(int));
 
 	// Verificando se os vetores foram alocados corretamente
-	if (vetorP1 == NULL || vetorP2 == NULL) 
+	if (vetorP1 == NULL || vetorP2 == NULL)  {
+		free(vetorP1);
+		free(vetorP2);
 		return -1;
+	}
 
 	// Zerando os elementos do vetor
-	zeraVetor(vetorP1, intAtri->tam);
-	zeraVetor(vetorP2, intAtri->tam);
+	zeraVetor(vetorP1, tamIntersecao);
+	zeraVetor(vetorP2, tamIntersecao);
 
 	// Laços para girar o dado 1d20 para os atributos
 	for (i = 0; i < intAtri->tam; i++) {
 		vetorP1[i] = (rand() % 20) + 1;
 		vetorP2[i] = (rand() % 20) + 1;
 	}
-	printf("\n");
 
 	// Pontuação de ambas pessoas inicia com 0
-	pontoP1 = pontoP2 = 0;
-	for (j = 0; j < intAtri->tam; j++) {
+	pontoP1 = 0;
+	pontoP2 = 0;
+	for (j = 0; j < tamIntersecao; j++) {
 		// Se pessoa 1 tiver atributo mais alto que pessoa 2
-		if (vetorP1[intAtri->elementos[j]] > vetorP2[intAtri->elementos[j]]) {
+		if (vetorP1[j] > vetorP2[j]) {
 			pontoP1++;
 		// Se oessia 2 tiver atributo mais alto que pessoa 1
-		} else if (vetorP1[intAtri->elementos[j]] > vetorP2[intAtri->elementos[j]]) {
+		} else if (vetorP1[j] < vetorP2[j]) {
 			pontoP2++;
 		// Se der empate
 		} else {
@@ -63,18 +70,22 @@ int batalha (struct pessoa *p1, struct pessoa *p2) {
 	free(vetorP1);
 	free(vetorP2);
 
-	if (pontoP1 == pontoP2)
-		return 3;
-	else if (pontoP1 > pontoP2)
+	// Caso interseção deu 0 elementos.
+	if (tamIntersecao == 0)
+		return -1;
+
+	if (pontoP1 > pontoP2)
 		return 1;
-	return 2; // Se ponto pessoa 1 < pessoa 2
+	if (pontoP1 < pontoP2)
+		return 2;
+	return 3;
 }
 
 int main() {
 	srand(time(NULL));
 	
 	int i, infelicidade, mismatch, match, erro;
-	int *pontos;
+	// Ponteiro para ponteiro para struct pessoa
 	struct pessoa **vetorCandidatas, **vetorPretendentes;
 	struct listaC *pretendentesValidos = inicializaListaC();
 	struct listaC *pretendentesLista = inicializaListaC();
@@ -84,10 +95,9 @@ int main() {
 	mismatch = 0;
 	match = 0;
 
-
 	vetorPretendentes = malloc(QTD_PRETENDENTES * sizeof(struct pessoa*));
 	vetorCandidatas = malloc(QTD_CANDIDATAS * sizeof(struct pessoa*));
-
+	
 	// Bota ponteiros para candidatas no vetor 
 	// e seus ids na pilha	
 	for(i = 0; i < QTD_CANDIDATAS; i++) {
@@ -103,41 +113,54 @@ int main() {
 	}
 
 	while(!pilhaVazia(candidatasPilha)) {
+		int *pontos;
 		struct item *aux, *p1, *p2, *pretendente;
-		int candidata;
-		int p1pos, p2pos, maisPontosID;
+		int candidata, p1pos, p2pos, maisPontosID;
 
+		// Retiro a candidata da pilha
 		pop(candidatasPilha, &candidata);
 
 		// Iterador da lista
 		aux = pretendentesLista->cabeca;
+		int taman = pretendentesLista->tamanho;
+		for (i = 0; i < taman; i++) {
+			if (intersecaoPessoa(vetorPretendentes[aux->id],vetorCandidatas[candidata]) != -1) {
+				// Coloca pretendente na lista de pretendentes válidos
+				transfereItem(pretendentesLista, pretendentesValidos, aux->id);
+				if (aux != pretendentesLista->cabeca)
+					aux = aux->proximo;
+			}
+		}
 
 		// Acha os pretendentes validos
+		/*
 		do {
 			// Condição para interseção dos atributos
 			if (intersecaoPessoa(vetorPretendentes[aux->id],vetorCandidatas[candidata]) != -1) {
-				aux = aux->proximo;
+				printf("ALOALO\n");
 				// Coloca pretendente na lista de pretendentes válidos
 				transfereItem(pretendentesLista, pretendentesValidos, aux->anterior->id);
-				continue;
+
 			}
 			aux = aux->proximo;
 		} while(aux != pretendentesLista->cabeca);
+		*/
 		
 		aux = NULL;
 
-		// Se não tiver pretendentes
+		// Se não tiver nenhum pretendentes
 		if(pretendentesValidos->tamanho < 1){
 			infelicidade++;
 			continue; // Pula o laço
 		}
-
-		pontos = calloc(pretendentesValidos->tamanho, sizeof(int));
 		
+		// p1pos = posição da pessoa 1
+		// p2pos = posição da pessoa 2
+		pontos = calloc(pretendentesValidos->tamanho, sizeof(int));
 		p1pos = 0;
 		p1 = pretendentesValidos->cabeca;
 		
-		// batalha dos pretendentes validos
+		// Batalha dos pretendentes validos
 		do {
 			p2 = p1->proximo;
 			p2pos = p1pos + 1;
@@ -165,8 +188,6 @@ int main() {
 			p1 = p1->proximo;
 		} while(p1->proximo != pretendentesValidos->cabeca);
 		
-		// Achar id do ganhador
-
 		// Acha o indice que tem mais pontos
 		maisPontosID = 0;
 		for(i = 0; i < pretendentesValidos->tamanho; i++){
@@ -174,19 +195,25 @@ int main() {
 				maisPontosID = i;
 		}
 
-		// Volta os perdedores para a lista principal
-		aux = pretendentesValidos->cabeca;
-		for (i = 0; i < pretendentesValidos->tamanho; i++) {
-			if (i != maisPontosID)
-				transfereItem(pretendentesValidos, pretendentesLista, aux->id);
-			aux = aux->proximo;
+		// Devolve os perdedores para a lista principal
+
+		if (pretendentesValidos->tamanho > 1) {
+			aux = pretendentesValidos->cabeca;
+			for (i = 0; i < pretendentesValidos->tamanho; i++) {
+				// Todos pretendentes menos o que possui maior pontuação
+				if (i != maisPontosID)
+					transfereItem(pretendentesValidos, pretendentesLista, aux->id);
+				aux = aux->proximo;
+			}
 		}
 
 		// pontos[0] = pontos pretendentes, pontos[1] = pontos candidata
-		pontos = realloc(pontos, 2 * sizeof(int));
+		pontos = realloc(pontos, (2 * sizeof(int)));
 		zeraVetor(pontos, 2);
+		// Identificador do pretendente
 		pretendente = extrairItem(pretendentesValidos, pretendentesValidos->cabeca->id, &erro);
-		// Laço principal - candidata ganha match, perde mismatch
+
+		// Laço principal 90Ifs
 		for (i = 0; i < 90; i++) {
 			switch (batalha(vetorPretendentes[pretendente->id], vetorCandidatas[candidata])) {
 			case 1:
@@ -208,6 +235,7 @@ int main() {
 		// Pretendente ganha mismatch + 1
 		if (pontos[0] >= pontos[1]) {
 			mismatch++;
+			// Insere pretendente na lista novamente
 			insere(pretendentesLista, pretendente->id);
 			printf("Candidata %d deu errado com Pretendente %d\n", candidata, pretendente->id);
 		} else {
@@ -215,19 +243,28 @@ int main() {
 			printf("Candidata %d deu certo com Pretendente %d\n", candidata, pretendente->id);
 			match++;
 		}
-		free(pretendente);
-		pretendente = NULL;
+		free(pontos);
+		destroiItem(pretendente);
+		free(aux);
+		pontos = NULL;
 	}
-	printf("Infelizes: %d\n", infelicidade);
-	printf("Match: %d\n", match);
-	printf("Mismatch: %d\n", mismatch);
 
+	printf(">> Infelizes: %d <<\n", infelicidade);
+	printf(">> Match: %d <<\n", match);
+	printf(">> Mismatch: %d <<\n", mismatch);
+
+	// Libera todas memórias alocadas
+	for (i = 0; i < QTD_CANDIDATAS; i++) {
+		destroiPessoa(vetorCandidatas[i]);
+		destroiPessoa(vetorPretendentes[i]);
+	}
 	destroiListaC(pretendentesValidos);
 	destroiListaC(pretendentesLista);
 	destroiPilha(candidatasPilha);
 	free(vetorCandidatas);
 	free(vetorPretendentes);
-	free(pontos);
+	vetorCandidatas = NULL;
+	vetorPretendentes = NULL;
 
 	return 0;
 }

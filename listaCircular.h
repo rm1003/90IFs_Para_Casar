@@ -23,6 +23,8 @@ int listaVazia(struct listaC *l);
 // insere um elemento na cauda
 void insere(struct listaC *l, int x);
 
+void destroiItem(struct item* dItem);
+
 //retira um elemento da lista com um dado id
 struct item* extrairItem(struct listaC* l, int id,int *erro);
 

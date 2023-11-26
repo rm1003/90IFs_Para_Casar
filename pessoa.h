@@ -1,3 +1,5 @@
+// Arquivo pessoa.h
+
 #define TAM 8
 #define ATRIBUTOSP 3
 #define ATRIBUTOSC 2
