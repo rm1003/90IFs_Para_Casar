@@ -68,6 +68,5 @@ void destroiPilha(struct pilha* p){
         pop(p,NULL);
     free(p);
     p = NULL;
+    return;
 }
-
-

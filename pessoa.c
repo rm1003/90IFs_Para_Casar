@@ -131,7 +131,6 @@ int intersecaoPessoa(struct pessoa *p1, struct pessoa *p2) {
 void destroiPessoa(struct pessoa *p) {
     free(p->atributos);
     free(p);
-    p = NULL;
     return;
 }
 
