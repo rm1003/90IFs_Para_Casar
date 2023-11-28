@@ -7,3 +7,5 @@ Estruturas:
 2 -> Pilha
 3 -> Conjuntos
 4 -> Vetores
+
+O trabalho está disponível no ramo "rui".
