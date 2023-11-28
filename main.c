@@ -7,10 +7,24 @@
 #include "pessoa.h"
 #include "conjunto.h"
 
+#define QTD_CANDIDATAS 10
+#define QTD_PRETENDENTES 10
 
-#define QTD_CANDIDATAS 100
-#define QTD_PRETENDENTES 100
+void imprimeVetor(int *vetor, int tam){
+	for(int i = 0; i < tam; i++)
+		printf("%d ",vetor[i]);
+	printf("\n");
+}
 
+void imprimeCasais(int **casais, int tam, int lsize){
+	int min;
+	for(int i = 0; i < tam; i+=lsize){
+		min = (lsize < tam-i)? lsize : tam-i; 
+		for (int j = 0; j < min; j++)
+			printf("[%3d,%3d]",casais[0][i+j],casais[1][i+j]);
+		printf("\n");
+	}
+}
 
 int batalha (struct pessoa *p1, struct pessoa *p2) {
 	int i, j, pontoP1, pontoP2, tamIntersecao;
@@ -85,12 +99,16 @@ int batalha (struct pessoa *p1, struct pessoa *p2) {
 int main() {
 	srand(time(NULL));
 	
-	int i, infelicidade, mismatch, match, erro, tam;
+	int i, infelicidade, mismatch, match, erro, tam, minQtdeCasais;
+	int *infelizes,*noivas,*noivos,**matches;
 	// Ponteiro para ponteiro para struct pessoa
 	struct pessoa **vetorCandidatas, **vetorPretendentes;
 	struct listaC *pretendentesValidos = inicializaListaC();
 	struct listaC *pretendentesLista = inicializaListaC();
 	struct pilha *candidatasPilha = inicializaPilha();
+
+	minQtdeCasais = (QTD_PRETENDENTES<QTD_CANDIDATAS)?QTD_PRETENDENTES:QTD_CANDIDATAS;
+
 
 	infelicidade = 0;
 	mismatch = 0;
@@ -98,6 +116,18 @@ int main() {
 
 	vetorPretendentes = malloc(QTD_PRETENDENTES * sizeof(struct pessoa*));
 	vetorCandidatas = malloc(QTD_CANDIDATAS * sizeof(struct pessoa*));
+	infelizes = malloc(QTD_CANDIDATAS * sizeof(int));
+	noivas = malloc(minQtdeCasais*sizeof(int));
+	noivos = malloc(minQtdeCasais*sizeof(int));
+	matches = malloc(2*sizeof(int*));
+
+	if (vetorCandidatas == NULL || vetorPretendentes == NULL)
+		return 0;
+	if (noivas == NULL || noivos == NULL || matches == NULL)
+		return 0;
+
+	matches[0] = noivos;
+	matches[1] = noivas; 
 	
 	// Bota ponteiros para candidatas no vetor 
 	// e seus ids na pilha	
@@ -113,15 +143,16 @@ int main() {
 		insere(pretendentesLista, i);
 	}
 
-	while(!pilhaVazia(candidatasPilha)) {
+	while(!pilhaVazia(candidatasPilha) && !listaVazia(pretendentesLista)) {
 		int *pontos;
 		struct item *p1, *p2, *pretendente, *aux, *tmp;
 		int candidata, p1pos, p2pos, maisPontosID;
 
+		printf("--------------------------------------------------------------------------------\n");
 		// Retiro a candidata da pilha
 		pop(candidatasPilha, &candidata);
+		printf("A Candidata %3d entrou no show!!\n",candidata);
 
-		// Iterador da lista
 		aux = pretendentesLista->cabeca;
 		tmp = aux->proximo;
 		// Acha os pretendentes validos
@@ -130,6 +161,7 @@ int main() {
 			// Condição para interseção dos atributos
 			if (intersecaoPessoa(vetorPretendentes[aux->id], vetorCandidatas[candidata]) != -1) {
 				// Coloca pretendente na lista de pretendentes válidos
+				printf("A Candidata %3d gostou do Pretendente %3d\n", candidata, aux->id);
 				transfereItem(pretendentesLista, pretendentesValidos, aux->id);
 				// Testar se a lista pretendentesLista está vazia (caso unitário)
 				if (!listaVazia(pretendentesLista)) {
@@ -147,6 +179,8 @@ int main() {
 
 		// Se não tiver nenhum pretendentes
 		if(pretendentesValidos->tamanho < 1){
+			printf("A Candidata %3d não gostou de ninguem :(\n",candidata);
+			infelizes[infelicidade] = candidata;
 			infelicidade++;
 			continue; // Pula o laço
 		}
@@ -157,22 +191,27 @@ int main() {
 		p1pos = 0;
 		p1 = pretendentesValidos->cabeca;
 		
+		printf("----COMEÇA A BATALHA DOS PRETENDENTES!!!----\n");
 		// Batalha dos pretendentes validos
 		do {
 			p2 = p1->proximo;
 			p2pos = p1pos + 1;
 			while(p2 != pretendentesValidos->cabeca) {
+				printf("\n    Pretendente %3d VS Pretendente %3d\n",p1->id,p2->id);
 				switch (batalha(vetorPretendentes[p1->id],vetorPretendentes[p2->id])) {
 					case 1:
 						// Pessoa 1 ganha
+						printf("       PRETENDENTE %3d GANHOU\n",p1->id);
 						pontos[p1pos] += 3;
 						break;
 					case 2:
+						printf("       PRETENDENTE %3d GANHOU\n",p2->id);
 						// Pessoa 2 ganha
 						pontos[p2pos] += 3;
 						break;
 					case 3:
 						// Empate
+						printf("          HOUVE UM EMPATE!!!\n");
 						pontos[p1pos] += 1;
 						pontos[p2pos] += 1;
 						break;
@@ -183,6 +222,8 @@ int main() {
 			p1pos++;
 			p1 = p1->proximo;
 		} while(p1->proximo != pretendentesValidos->cabeca);
+		printf("----TERMINA A BATALHA DOS PRETENDENTES!!!----\n");
+
 		
 		// Acha o indice que tem mais pontos
 		maisPontosID = 0;
@@ -215,7 +256,9 @@ int main() {
 		zeraVetor(pontos, 2);
 		// Identificador do pretendente
 		pretendente = extrairItem(pretendentesValidos, pretendentesValidos->cabeca->id, &erro);
+		printf("      O GANHADOR FOI O PRETENDENTE %d\n\n", pretendente->id);
 
+		printf("Entram no 90 IFs: CANDIDATA %3d e PRETENDENTE %3d\n", candidata,pretendente->id);
 		// Laço principal 90Ifs
 		for (i = 0; i < 90; i++) {
 			switch (batalha(vetorPretendentes[pretendente->id], vetorCandidatas[candidata])) {
@@ -239,11 +282,13 @@ int main() {
 		if (pontos[0] >= pontos[1]) {
 			// Insere pretendente na lista novamente
 			insere(pretendentesLista, pretendente->id);
-			printf("Candidata %3d deu errado com Pretendente %3d\n", candidata, pretendente->id);
+			printf("Candidata %3d e Pretendente %3d deram mismatch!!!! :(\n\n", candidata, pretendente->id);
 			mismatch++;
 		} else {
 			// Candidata ganha match + 1
-			printf("Candidata %3d deu certo  com Pretendente %3d\n", candidata, pretendente->id);
+			printf("Candidata %3d e Pretendente %3d deram match!!!! :)\n\n", candidata, pretendente->id);
+			matches[0][match] = pretendente->id;
+			matches[1][match] = candidata;
 			match++;
 		}
 		free(pretendente);
@@ -251,9 +296,13 @@ int main() {
 		pontos = NULL;
 	}
 	
-	printf("%12s%2d\n", "Infelizes: ", infelicidade);
-	printf("%12s%2d\n", "Match: ", match);
-	printf("%12s%2d\n", "Mismatch: ", mismatch);
+	printf("Houveram %3d Candidatas Infelizes:\n", infelicidade);
+	for(i = 0; i < infelicidade; i+=10)
+		imprimeVetor(infelizes+i,(10 < infelicidade-i)? 10 : infelicidade-i);
+
+	printf("Houveram %3d Match:\n", match);
+	imprimeCasais(matches,match,3);
+	printf("Houveram %3d Mismatch!!\n", mismatch);
 
 	// Libera todas memórias alocadas
 	for (i = 0; i < QTD_CANDIDATAS; i++) {
@@ -268,6 +317,10 @@ int main() {
 	destroiPilha(candidatasPilha);
 	free(vetorCandidatas);
 	free(vetorPretendentes);
+	free(infelizes);
+	free(noivas);
+	free(noivos);
+	free(matches);
 	vetorCandidatas = NULL;
 	vetorPretendentes = NULL;
 
