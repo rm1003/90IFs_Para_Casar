@@ -7,8 +7,8 @@
 #include "pessoa.h"
 #include "conjunto.h"
 
-#define QTD_CANDIDATAS 10
-#define QTD_PRETENDENTES 10
+#define QTD_CANDIDATAS 100
+#define QTD_PRETENDENTES 100
 
 void imprimeVetor(int *vetor, int tam){
 	for(int i = 0; i < tam; i++)
